@@ -10,6 +10,8 @@ from flask import render_template, request, redirect, url_for, flash, session, a
 from werkzeug import secure_filename, FileStorage
 from app.forms import UploadForm
 from app.config import Config
+from flask import send_from_directory
+
 
 
 ###
@@ -25,7 +27,7 @@ def home():
 @app.route('/about/')
 def about():
     """Render the website's about page."""
-    return render_template('about.html', name="Mary Jane")
+    return render_template('about.html', name="Kyle Sterling")
 
 
 @app.route('/upload', methods=['POST', 'GET'])
@@ -68,6 +70,30 @@ def logout():
     session.pop('logged_in', None)
     flash('You were logged out', 'success')
     return redirect(url_for('home'))
+
+@app.route('/uploads/<filename>')
+def get_image(filename):
+    cd = os.getcwd()
+    return send_from_directory(os.path.join(cd,app.config['UPLOAD_FOLDER']), filename)
+
+@app.route('/files')
+def files():
+    if not session.get('logged_in'):
+        abort(401)
+    return render_template('files.html',imageList=get_uploaded_images())
+
+
+def get_uploaded_images():
+    rootdir = os.getcwd()
+    lst = []
+    for subdir, dirs, files in os.walk(rootdir+'/uploads'): 
+        for filename in files:
+            if filename.endswith(".jpg") or filename.endswith(".png"):
+                lst.append(filename)
+    return lst
+
+
+
 
 
 ###

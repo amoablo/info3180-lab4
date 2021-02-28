@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+
+{% block main %}
+    {#    loop through galaxies and render them in list#}
+    <div class="main">
+        {% for image in imageList %}
+        <div class='picture'> 
+            <img src="{{ url_for('get_image',filename = image) }}"> 
+        </div>
+        {% endfor %}
+    </div>
+{% endblock %}
